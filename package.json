@@ -1,0 +1,19 @@
+{
+  "name": "new-ed-info",
+  "version": "3.0.0",
+  "main": "new-ed-info.js",
+  "license": "MIT",
+  "dependencies": {
+    "config": "^1.28.1",
+    "discord.io": "woor/discord.io#gateway_v6",
+    "mathjs": "^3.17.0",
+    "moment": "^2.19.3",
+    "request": "^2.83.0"
+  },
+  "devDependencies": {
+    "@types/config": "^0.0.33",
+    "@types/mathjs": "^0.0.35",
+    "@types/request": "^2.0.9",
+    "@types/node": "^8.5.2"
+  }
+}

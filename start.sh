@@ -1,6 +1,6 @@
 #!/bin/bash
-export NODE_ENV=production
-service="discord-twitch-bot"
+#export NODE_ENV=production
+service="new-ed-info"
 restartdelay=5
 processname="node"
 processargs="$service.js"

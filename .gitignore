@@ -3,6 +3,9 @@ logs
 *.log
 npm-debug.log*
 
+# bot config
+config/production.json
+
 # Runtime data
 pids
 *.pid

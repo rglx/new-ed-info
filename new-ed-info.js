@@ -610,7 +610,7 @@ bot.on( 'message', ( user, userId, channelId, message, event ) => {
 					prefixMessageWith = argument;
 				}
 				bot.sendMessage( {
-					to: channelId
+					to: channelId 
 					, message: ':gear::speech_left: ' + prefixMessageWith + '\n' + configuration.replaceCommands[ replaceCommand ]
 				} );
 			}

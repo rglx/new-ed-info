@@ -12,10 +12,10 @@ const config = require( 'config' ); // Install using npm
 
 console.log( 'Loading configuration' );
 const configuration = config.get( 'configuration' );
-const fchar = '\uD83C\uDDEB';
 const botName = 'New E:D Info'
 const botAuthor = 'DJ Arghlex#1729 & willyb321#2816';
-const botVersion = '3.2'
+const botVersion = '3.2.1'
+const fchar = '\uD83C\uDDEB';
 
 // FUNCTIONS
 console.log( 'Loading functions' );
@@ -350,8 +350,11 @@ let messageId;
 let command;
 let argument;
 bot.on( 'message', ( user, userId, channelId, message, event ) => {
-	currenttime = new Date()
-		.toISOString();
+	if ( bot.channels[ channelId ] == undefined ) {
+		writeLog("Ignoring PM from "+user, "Discord", false)
+		return
+	}
+	currenttime = new Date().toISOString();
 	timestamp = parseInt( currenttime.split( /-(.+)/, 2 )[ 0 ] ) + 1286 + '-' + currenttime.split( /-(.+)/, 2 )[ 1 ];
 	serverId = bot.channels[ channelId ][ 'guild_id' ]
 	server = bot.servers[ serverId ].name
@@ -456,6 +459,11 @@ bot.on( 'message', ( user, userId, channelId, message, event ) => {
 			returnedEmbedObject.fields.push( {
 				name: configuration.commandPrefix + 'setCmdPrefix <string>'
 				, value: 'Sets prefix character(s) to <string>'
+				, inline: true
+			} );
+			returnedEmbedObject.fields.push( {
+				name: configuration.commandPrefix + 'repeatme <string>'
+				, value: 'Says <string> in current channel.'
 				, inline: true
 			} );
 			returnedEmbedObject.fields.push( {
@@ -576,6 +584,20 @@ bot.on( 'message', ( user, userId, channelId, message, event ) => {
 				} )
 				writeLog( err, 'Error' )
 			}
+		} else if ( command == configuration.commandPrefix + "repeatme" ) {
+			try {
+				bot.sendMessage( {
+					to: channelId
+					, message: argument
+				} )
+				writeLog( "Command prefix changed to: " + configuration.commandPrefix, "Discord" )
+			} catch ( err ) {
+				bot.sendMessage( {
+					to: channelId
+					, message: "<@" + configuration.adminUserId + ">:\n:sos: **An error occured!**\n repeatme(): `" + err + '`'
+				} )
+				writeLog( err, "Error" )
+			}
 		} else if ( command == configuration.commandPrefix + 'setnickname' ) {
 			try {
 				bot.editNickname( {
@@ -610,7 +632,7 @@ bot.on( 'message', ( user, userId, channelId, message, event ) => {
 					prefixMessageWith = argument;
 				}
 				bot.sendMessage( {
-					to: channelId 
+					to: channelId
 					, message: ':gear::speech_left: ' + prefixMessageWith + '\n' + configuration.replaceCommands[ replaceCommand ]
 				} );
 			}
@@ -620,7 +642,7 @@ bot.on( 'message', ( user, userId, channelId, message, event ) => {
 
 bot.on( 'disconnect', function( errMessage, code ) { // disconnect handling, reconnects unless shut down by restart
 	writeLog( 'Disconnected from Discord! Code: ' + code + ', Reason: ' + errMessage, 'Error' )
-	bot.connect()
+	setTimeout(bot.connect, 5000)
 } );
 
 bot.once( 'ready', () => {

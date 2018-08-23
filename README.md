@@ -18,13 +18,13 @@ E:D Info Bot, a Discord bot for Elite: Dangerous groups.
 
 You need tmux or screen, and bash. That's pretty much it.
 
-1. Install node
+2. Install node
 
 https://nodejs.org/en/download/current/
 
 *Note: I run the bot under the latest releases (at time of writing that is v10.9.0) of node, but the LTS release should do just fine.*
 
-1. Install your dependencies:
+3. Install your dependencies:
 
 ```npm install Woor/discord.io#gateway_v6 config mathjs request```
 
@@ -40,13 +40,13 @@ Uses the following libraries:
 
 1. Create an application **and a bot user** for your bot at [Discord's developer applications portal](<https://discordapp.com/developers/applications/me>) then copy in the token to the bot's configuration.
 
-1. INARA
+2. INARA
 
 INARA's configuration with this bot is a little more complex. You need essentially a separate account to run the bot's queries through, as I have not updated it for the new inara API systems. This will remain undocumented, as it's a real pain to set up properly. You essentially feed the bot the two cookies that INARA sets in your browser once you log in (which i recommend doing with a totally separate browser, or incognito mode, without any passwords for it saved in your browser's password storage) via `config/default.json`. These change every time you "log in", which means almost every single time you open INARA your old tokens will be invalidated, essentially breaking the bot's ability to look at things in INARA's search.
 
 *Sorry artie, i'll get it updated soon*
 
-1. Edit the rest of `config/default.json` to your liking, setting your channel and user IDs, nicknames, current game and everything else properly.
+3. Edit the rest of `config/default.json` to your liking, setting your channel and user IDs, nicknames, current game and everything else properly.
 
 *Note: Getting IDs for things requires you to turn on 'developer mode' in Discord, under the Appearance tab of User Settings. With this enabled, most things (channels, servers, users) will have an extra selection in their right-click menu you can get the IDs from.*
 

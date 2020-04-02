@@ -2,6 +2,10 @@
 
 E:D Info Bot, a Discord bot for Elite: Dangerous groups.
 
+# This project is discontinued.
+
+Sorry. Discord's suspicious activities with user data continue to prevent me from mustering the motivation to develop things to enrich their platform with. Feel free to fork and modify this project to your needs.
+
 ## Features
 
 - EDSM system information retrieval

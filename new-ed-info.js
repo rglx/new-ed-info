@@ -13,7 +13,7 @@ const config = require( 'config' ); // Install using npm
 console.log( 'Loading configuration' );
 const configuration = config.get( 'configuration' );
 const botName = 'New E:D Info'
-const botAuthor = 'DJ Arghlex#1729 & willyb321#2816';
+const botAuthor = 'CMDRs DJ Arghlex and willyb321';
 const botVersion = '3.3'
 
 // FUNCTIONS

@@ -1,19 +1,31 @@
 {
-  "name": "new-ed-info",
-  "version": "3.0.0",
-  "main": "new-ed-info.js",
-  "license": "MIT",
-  "dependencies": {
-    "config": "^1.28.1",
-    "discord.io": "woor/discord.io#gateway_v6",
-    "mathjs": "^3.17.0",
-    "moment": "^2.19.3",
-    "request": "^2.83.0"
-  },
-  "devDependencies": {
-    "@types/config": "^0.0.33",
-    "@types/mathjs": "^0.0.35",
-    "@types/request": "^2.0.9",
-    "@types/node": "^8.5.2"
-  }
+	"dependencies": {
+		"config": "^3.3.6",
+		"discord.js": "^12.5.3",
+		"mathjs": "^9.4.3",
+		"request": "^2.88.2"
+	},
+	"name": "new-ed-info",
+	"version": "3.3.1",
+	"description": "Discord bot for Elite Dangerous guilds providing various functions.",
+	"main": "new-ed-info.js",
+	"devDependencies": {},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/rglx/new-ed-info.git"
+	},
+	"author": "rglx",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/rglx/new-ed-info/issues"
+	},
+	"homepage": "https://github.com/rglx/new-ed-info#readme",
+	"keywords": [
+		"discord",
+		"elite",
+		"bot"
+	]
 }

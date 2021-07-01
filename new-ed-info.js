@@ -5,7 +5,8 @@
 console.log( 'Loading dependencies' );
 const fs = require( 'fs' ); // Built-in to nodejs
 const path = require( 'path' ); // Built-in to nodejs
-const Discord = require( 'discord.io' ); // Install using npm
+//const Discord = require( 'discord.io' ); // Install using npm
+const Discord = require( 'discord.js' ); // Install using npm
 const request = require( 'request' ); // Install using npm
 const mathjs = require( 'mathjs' ); // Install using npm
 const config = require( 'config' ); // Install using npm
@@ -14,7 +15,7 @@ console.log( 'Loading configuration' );
 const configuration = config.get( 'configuration' );
 const botName = 'New E:D Info'
 const botAuthor = 'CMDRs DJ Arghlex and willyb321';
-const botVersion = '3.3'
+const botVersion = '3.3.1beta1'
 
 // FUNCTIONS
 console.log( 'Loading functions' );
@@ -84,13 +85,16 @@ function getEdsmApiResult( page, callback ) { // Query EDSM's api for something
 }
 // Main functions
 function getCmdrInfoFromInara( name, callback ) { // Search inara for a CMDR, do some stuff with regexps, and return part of a formatted message
-	const searchResultsRegexp = /Commanders found.*?\/cmdr\/(\d+)/i;
-	const cmdrDetailsNameRegexp = /<span class="pflheadersmall">CMDR<\/span> (.*?)<\/td>/i;
-	const cmdrDetailsAvatarRegexp = /<td rowspan="4" class="profileimage"><img src="(.*)"><\/td>/i;
-	const cmdrDetailsTableRegexp = /<span class="pflcellname">(.*?)<\/span><br>(.*?)<\/td>/gi;
-	const loginToSearchRegexp = /You must be logged in to view search results.../;
+	const searchResultsRegexp = /Commanders found.*?\/cmdr\/(\d+)/i; // the first commander page inara's search comes up with
+	const cmdrDetailsNameRegexp = /<span class="pflheadersmall">Cmdr<\/span> (.*?)<\/td>/i; // commander name
+	const cmdrDetailsAvatarRegexp = /<td rowspan="4" class="profileimage" ><img src="(.*)"><\/td>/i; // profile image
+	const cmdrDetailsTableRegexp = /<span class="pflcellname">(.*?)<\/span><br>(.*?)<\/td>/gi; // commander profile table grabber
+	const loginToSearchRegexp = /You must be logged in to view search results.../; // "login to search" error message
+	const cmdrDetailsTableSquadronLinkRegexp = /<a href="\/squadron\/(\d+)\/" class="nocolor">(.*?)<\/a>/i; // squadron name
+	const cmdrDetailsTableCreditStringDeformatting = /<span class="minor crly">(.*?)<\/span>/ // "cr" formatting
+
 	try {
-		getInaraPage( 'search?location=search&searchglobal=' + encodeURIComponent( name ), searchResults => {
+		getInaraPage( 'search?search=' + encodeURIComponent( name ), searchResults => {
 			if ( searchResults ) {
 				const searchResultsMatches = searchResults.match( searchResultsRegexp );
 				const loginToSearchMatches = searchResults.match( loginToSearchRegexp );
@@ -142,7 +146,10 @@ function getCmdrInfoFromInara( name, callback ) { // Search inara for a CMDR, do
 									, fields: []
 								};
 								for ( const inaraInfoEntry in inaraInfo ) {
-									if ( inaraInfo[ inaraInfoEntry ] !== '&nbsp;' && inaraInfo[ inaraInfoEntry ] !== '' && inaraInfo[ inaraInfoEntry ] !== ' ' ) {
+									if ( inaraInfo[ inaraInfoEntry ] !== '&nbsp;' && inaraInfo[ inaraInfoEntry ] !== '' && inaraInfo[ inaraInfoEntry ] !== ' ' && inaraInfo[ inaraInfoEntry ] !== '-' ) { // skip empty entries
+										inaraInfo[inaraInfoEntry] = inaraInfo[inaraInfoEntry].replace(cmdrDetailsTableCreditStringDeformatting,'$1') // remove formatting
+										inaraInfo[inaraInfoEntry] = inaraInfo[inaraInfoEntry].replace(cmdrDetailsTableSquadronLinkRegexp,'[$2](<$1>)') // remove formatting
+
 										returnedEmbedObject.fields.push( {
 											name: inaraInfoEntry
 											, value: inaraInfo[ inaraInfoEntry ]
@@ -324,7 +331,7 @@ function getCurrentGameTime( input, callback ) { // Calculate current game time
 	} );
 }
 
-function botManagement ( argument, callback ) { // do server/bot management stuff
+function botManagement ( incomingArgument, callback ) { // do server/bot management stuff
 
 	const returnedEmbedObject = {
 		footer: {
@@ -335,7 +342,7 @@ function botManagement ( argument, callback ) { // do server/bot management stuf
 		, description: 'empty description'
 		, fields: []
 	};
-	let arguments = argument.split(' ')
+	let arguments = incomingArgument.split(' ')
 
 	if (arguments[0] == 'server') { //server-specific management command
 
@@ -343,120 +350,97 @@ function botManagement ( argument, callback ) { // do server/bot management stuf
 			throw 'Please specify a server ID and a server-specific command'
 		}
 
-		// create a list of servers to quickly check against
-		let servers = []
-		for ( server in bot.servers ) {
-			servers.push(bot.servers[server].id)
+		// this one is a mess
+		try {
+			targetGuild = client.guilds.resolve(arguments[1])
+		} catch (error) {
+			throw "Couldn't resolve that server's ID. Error: "+ error
 		}
-		if (!servers.includes(arguments[1])) { // and now we check against our self-made list
-			throw 'Server ID not found in bot server list.'
-		}
-		
-		servername = bot.servers[ arguments[1] ].name 
 
 		// main logic for commands
 
 		if (arguments[2] == 'setnick') { // set nickname
 			newnick = arguments.slice(3).join(' ')
-			
-			bot.editNickname( {
-				serverID: serverId
-				, userID: bot.id
-				, nick: newnick
-			} )
 
-			writeLog('Overwrote command prefix to `'+arguments.slice(1).join(' ')+'`', 'Management')
-			returnedEmbedObject.title = 'Success!'
-			returnedEmbedObject.description = 'Set bot\'s nickname on *' + bot.servers[ arguments[1] ].name + '* to `'+ newnick +'`.'
-			callback(returnedEmbedObject)
-			return
+			myUserOnGuild = targetGuild.members.resolveID(client.user.id)
+			myUserOnGuild.setNickname(newnick,"Set by bot administrator")
+			.then(value => {
+					writeLog('Set bot\'s nickname on *' + targetGuild.toString() + '* to `'+ newnick +'`.', 'Management')
+					returnedEmbedObject.title = 'Success!'
+					returnedEmbedObject.description = 'Set bot\'s nickname on *' + targetGuild.toString() + '* to `'+ newnick +'`.'
+					callback(returnedEmbedObject)
+					return
+				}
+			)
+			.catch( err => { throw "Couldn't set nickname! Error: " + err }	)
+
 
 		} else if (arguments[2] == "leave") { // forces bot to leave a server
-			bot.leaveServer(arguments[1])
+
+			guildToLeave = client.guilds.resolveID(arguments[1])
+			guildToLeave.leave()
 
 			writeLog('Left server `'+servername+'`', 'Management')
 			returnedEmbedObject.title = 'Success!'
-			returnedEmbedObject.description = 'Left server *servername*'
+			returnedEmbedObject.description = 'Left server ' + guildToLeave.toString()
 			callback(returnedEmbedObject)
 			return
 
-		} else if (arguments[2] == "getadmininfo") { // gets the information of the server owner
-			serverownerid = bot.servers[ arguments[1] ].owner_id
-			serverowner = bot.users[serverownerid].username + "#" + bot.users[serverownerid].discriminator
-
-			writeLog('Retrieved server owner information for `'+servername+", info: "+serverowner+", ID: "+serverownerid,"Management")
-
-			returnedEmbedObject.title = 'Owner of server *'+ servername + "*"
-			returnedEmbedObject.description = "**"+serverowner+"**, ID: `"+serverownerid+"`"
-			callback(returnedEmbedObject)
-			return
 		}
 
-
 	} else if (arguments[0] == 'broadcast') {
-		for (server in bot.servers) {
+		throw "needs to be rewritten. sorry."
+		/*for (server in client.guilds.fetch()) {
 			const returnedEmbedObject = {
 				timestamp
 				, footer: {
 					icon_url: configuration.icons.boticon
 					, text: botName
 				}
-				, title: 'Message from Bot Administrator <@' + configuration.adminUserId + '> (DJ Arghlex#1729)'
+				, title: 'Message from Bot Administrator <@' + configuration.adminUserId + '> ('+ client.users.resolveID(configuration.adminUserId) +')'
 				, description: arguments.slice(1).join(' ')
 				, fields: []
 			};
 			bot.sendMessage( {
 				to: bot.servers[server]['guild_id']
-				, embed: returnedEmbedObject
+				, { embed: returnedEmbedObject }
 			} );
-		}
+		}*/
 
 
 	} else if (arguments[0] == 'listservers') {
-		returnedEmbedObject.title = 'Server Listing'
+		throw "needs to be rewritten. sorry."
+		/*returnedEmbedObject.title = 'Server Listing'
 		returnedEmbedObject.description = 'Listing of all servers bot is connected to.'
-		for (server in bot.servers) {
+		client.guilds.fetch().then(
+			for (guild in client.guilds.cache) {
+				client.users.fetch(server.ownerID)
+
+			}
+		);
 			returnedEmbedObject.fields.push( {
-				name: bot.servers[server].name
-				, value: bot.servers[server].id
+				name: server.toString() + "(" + server.id + ")"
+				, value: "Owner: <@" + server.ownerID + "> ("+ .then(tag +")"
 				, inline: true
 			} );
-		}
 		writeLog('Sent server list.','Management')
 		callback(returnedEmbedObject)
-		return
-
+		return*/
 
 	} else if (arguments[0] == 'setgame') { // currentgame
-		bot.setPresence( {
-			'game': {
-				'name': arguments.slice(1)
-			}
-		} )
+		throw "needs to be rewritten. sorry."
+		/*client.presence = arguments.slice(1)
 		writeLog( 'Currently Playing Game set to: ' + arguments.slice(1).join(' '), 'Management' )
 
 		writeLog('Overwrote command prefix to `'+arguments.slice(1).join(' ')+'`', 'Management')
 		returnedEmbedObject.title = 'Success!'
 		returnedEmbedObject.description = 'Set the Now Playing message to `'+ arguments.slice(1).join(' ') +'`. This change will revert when the bot next restarts.'
 		callback(returnedEmbedObject)
-		return
+		return*/
 
 
 	} else if (arguments[0] == 'setcmdprefix') { // cmd prefix temp override
-		if (arguments[1] !== undefined && arguments[1].length > 0 ) {
-
-			throw 'author\'s note: okay, well, this is actually broken because of the way the configuration is loaded and subsequently handled. if you really need to change it just change it in the config.'
-			//const newprefix = arguments[1].substr(0,1)
-			//configuration.commandPrefix = newprefix
-
-			//writeLog('Overwrote command prefix to `'+newprefix+'`', 'Management')
-			//returnedEmbedObject.title = 'Success!'
-			//returnedEmbedObject.description = 'Globally set the command prefix to `'+ newprefix +'`. This change will revert when the bot next restarts.'
-			//callback(returnedEmbedObject)
-			//return
-		} else {
-			throw 'New command prefix was invalid.'
-		}
+		throw 'can only be changed in configuration. sorry.'
 
 
 	} else if (arguments[0] == 'help') { // help sub-page
@@ -490,13 +474,8 @@ function botManagement ( argument, callback ) { // do server/bot management stuf
 			, inline: true
 		} );
 		returnedEmbedObject.fields.push( {
-			name: configuration.commandPrefix + 'botmanagement setcmdprefix <char>'
-			, value: 'Temporarily sets the command prefix to <char>'
-			, inline: true
-		} );
-		returnedEmbedObject.fields.push( {
 			name: configuration.commandPrefix + 'botmanagement listservers'
-			, value: 'Lists servers the bot is on'
+			, value: 'Lists servers the bot is on & their owners'
 			, inline: true
 		} );
 		returnedEmbedObject.fields.push( {
@@ -509,34 +488,13 @@ function botManagement ( argument, callback ) { // do server/bot management stuf
 			, value: 'Changes the bot\'s nickname on <serverID>'
 			, inline: true
 		} );
-		returnedEmbedObject.fields.push( {
-			name: configuration.commandPrefix + 'botmanagement server <serverID> getadmininfo'
-			, value: 'Retrieves information of the owner of <serverID> (username, 4-number character, and userID)'
-			, inline: true
-		} );
 		callback (returnedEmbedObject)
 	} else {
-		throw 'Please specify a command.'
+		throw 'Please specify a valid sub-command.'
 	}
 }
 
-// DISCORD BOT INTERFACES
-console.log( 'Starting Discord interface' );
-const bot = new Discord.Client( {
-	token: configuration.authToken
-	, autorun: true
-} );
-bot.on( 'ready', () => {
-	writeLog( 'User ID: ' + bot.id + ' Bot User: ' + bot.username, 'Discord' );
-	writeLog( 'Add to your server using this link: ', 'Discord' );
-	writeLog( ' https://discordapp.com/oauth2/authorize?client_id=' + bot.id + '&scope=bot&permissions=104321088 ', 'Discord' );
-	writeLog( '*** Bot ready! ***', 'Discord' );
-	bot.setPresence( {
-		game: {
-			name: configuration.currentGame
-		}
-	} );
-} );
+
 let currenttime;
 let timestamp;
 let serverId;
@@ -544,52 +502,51 @@ let channel;
 let server;
 let messageId;
 let command;
-let argument;
-bot.on( 'message', ( user, userId, channelId, message, event ) => {
-	if ( bot.channels[ channelId ] == undefined ) {
-		writeLog("Ignoring PM from "+user, "Discord", false)
+let commandArgument;
+function processMessage (messageObject) {
+	user = messageObject.author.tag // client username
+	userId = messageObject.author.id // client userid
+	channelId = messageObject.channel.id // channel id of message
+	message = messageObject.toString() // contents of message
+
+	if ( userId === channelId ) { // ignore DMs
+		writeLog("Ignoring DM from "+messageObject.author.tag, "Discord", false)
 		return
 	}
+
+	serverId = messageObject.guild.id // server's ID
+	server = messageObject.guild.toString() // server's name
+	channel = '#' + messageObject.channel.name // channel's name
+
+	//create a timestamp to apply to the message embeds
 	currenttime = new Date().toISOString();
 	timestamp = parseInt( currenttime.split( /-(.+)/, 2 )[ 0 ] ) + 1286 + '-' + currenttime.split( /-(.+)/, 2 )[ 1 ];
-	serverId = bot.channels[ channelId ][ 'guild_id' ]
-	server = bot.servers[ serverId ].name
-	channel = '#' + bot.channels[ channelId ].name
+
+	// chop up our messages
 	command = message.split( ' ', 1 )
 		.join( ' ' )
 		.toLowerCase()
-	argument = message.split( ' ' )
+	commandArgument = message.split( ' ' )
 		.slice( 1 )
 		.join( ' ' )
 	writeLog( '<' + user + '> ' + message, 'Channel - ' + server + '/' + channel, message.startsWith( configuration.commandPrefix ) ) // log everything to stdout, but log command usage to file
 
 	if ( command == configuration.commandPrefix + 'ping' ) { // send a message to the channel as a ping-testing thing.
-		bot.sendMessage( {
-			to: channelId
-			, message: ':heavy_check_mark: <@' + userId + '>: Pong!'
-		} )
+		messageObject.reply(':heavy_check_mark: <@' + userId + '>: Pong!')
 	} else if ( command == configuration.commandPrefix + 'ping-embed' ) { // send a embed to the channel as a ping-testing thing.
-		bot.sendMessage( {
-			to: channelId
-			, 'embed': {
+		messageObject.reply( 
+			{'embed': {
 				'title': 'Pong!'
 				, 'description': ':heavy_check_mark: Pong!'
 				, 'color': 0x0a8bd6
-				, 'url': 'https://github.com/DJArghlex/new-ed-info'
+				, 'url': 'https://github.com/rglx/new-ed-info'
 				, 'fields': [ {
 					'name': 'Hey ' + user + '!'
 					, 'value': 'It works!'
 					, 'inline': true
 				} ]
-			}
-		}, function( err, resp ) {
-			if ( err ) {
-				bot.sendMessage( {
-					to: channelId
-					, message: ':sos: <@' + userId + '>: Embedded pong failed! Reason: `' + err + '` `' + resp + '`'
-				} )
-			}
-		} )
+			}}
+		)
 	} else if ( command === configuration.commandPrefix + 'help' ) { // Help page
 		const returnedEmbedObject = {
 			timestamp
@@ -602,7 +559,7 @@ bot.on( 'message', ( user, userId, channelId, message, event ) => {
 				, icon_url: configuration.icons.help
 			}
 			, title: 'Help Page'
-			, description: '**' + botName + ' v' + botVersion + ' by ' + botAuthor + '** - Direct complaints to `/dev/null`\n    Source available on GitHub: <https://github.com/DJArghlex/new-ed-info>\n    Support development by making FDev play nice with devs like us.\n    Add this bot to your server: <https://discordapp.com/oauth2/authorize?client_id=' + bot.id + '&scope=bot&permissions=104321088>'
+			, description: '**' + botName + ' v' + botVersion + ' by ' + botAuthor + '** - Direct complaints to `/dev/null`\n    Source available on GitHub: <https://github.com/rglx/new-ed-info>\n    Support development by making FDev play nice with devs like us.\n    Add this bot to your server: <https://discordapp.com/oauth2/authorize?client_id=' + client.user.id + '&scope=bot&permissions=104321088>'
 			, fields: []
 		};
 		returnedEmbedObject.fields.push( {
@@ -649,107 +606,106 @@ bot.on( 'message', ( user, userId, channelId, message, event ) => {
 				, inline: true
 			} );
 		}
-		bot.sendMessage( {
-			to: channelId
-			, embed: returnedEmbedObject
-		} );
+		messageObject.reply( { embed : returnedEmbedObject} );
 		writeLog( 'Sent help page', 'Discord' );
-	} else if ( command === configuration.commandPrefix + 'whois' ) { // INARA Searcher system
+	}
+	else if ( command === configuration.commandPrefix + 'whois' ) { // INARA Searcher system
 		try {
-			getCmdrInfoFromInara( argument, embeddedObject => {
-				bot.sendMessage( {
-					to: channelId
-					, embed: embeddedObject
-				} );
+			messageObject.channel.startTyping()
+			getCmdrInfoFromInara( commandArgument, embeddedObject => {
+				messageObject.reply( {
+					embed: embeddedObject
+				} ).then (
+					messageObject.channel.stopTyping()
+				);
 			} );
 		} catch ( err ) {
-			bot.sendMessage( {
-				to: channelId
-				, message: ':sos: An error occurred:\nwhoisCmdr(): getCmdrInfoFromInara(): ' + err
-			} );
+			messageObject.reply('<@' + configuration.adminUserId + '>:\n:sos: **An error occured!**\n whoisCmdr(): getCmdrInfoFromInara(): ' + err)
+			writeLog( err, 'Error' )
 		}
 	} else if ( command === configuration.commandPrefix + 'dist' || command === configuration.commandPrefix + 'distance' ) { // edsm two systems distance fetcher
 		try {
-			getDistanceBetweenTwoSystems( argument, embeddedObject => {
-				bot.sendMessage( {
-					to: channelId
-					, embed: embeddedObject
-				} );
+			messageObject.channel.startTyping()
+			getDistanceBetweenTwoSystems( commandArgument, embeddedObject => {
+				messageObject.reply( {
+					embed: embeddedObject
+				} ).then (
+					messageObject.channel.stopTyping()
+				);
 			} );
 		} catch ( err ) {
-			bot.sendMessage( {
-				to: channelId
-				, message: ':sos: <@' + configuration.adminUserId + '>! An error occured:\ngetDistanceBetweenTwoSystems(): ' + err
-			} );
+			messageObject.reply('<@' + configuration.adminUserId + '>:\n:sos: **An error occured!**\n getDistanceBetweenTwoSystems(): ' + err)
+			writeLog( err, 'Error' )
 		}
 	} else if ( command === configuration.commandPrefix + 'system' || command === configuration.commandPrefix + 'sys' ) { // edsm system info
 		try {
-			bot.simulateTyping( channelId );
-			getInformationAboutSystem( argument, embeddedObject => {
-				bot.sendMessage( {
-					to: channelId
-					, embed: embeddedObject
-				} );
+			messageObject.channel.startTyping()
+			getInformationAboutSystem( commandArgument, embeddedObject => {
+				messageObject.reply( {
+					embed: embeddedObject
+				} ).then (
+					messageObject.channel.stopTyping()
+				);
 			} );
 		} catch ( err ) {
-			bot.sendMessage( {
-				to: channelId
-				, message: ':sos: <@' + configuration.adminUserId + '>! An error occured:\ngetInformationAboutSystem(): ' + err
-			} );
+			messageObject.reply('<@' + configuration.adminUserId + '>:\n:sos: **An error occured!**\n getInformationAboutSystem(): ' + err)
+			writeLog( err, 'Error' )
 		}
 	} else if ( command === configuration.commandPrefix + 'time' ) { // Game-time fetcher
 		try {
-			getCurrentGameTime( argument, embeddedObject => {
-				bot.sendMessage( {
-					to: channelId
-					, embed: embeddedObject
+			getCurrentGameTime( commandArgument, embeddedObject => {
+				messageObject.reply( {
+					embed: embeddedObject
 				} );
 			} );
 		} catch ( err ) { // You never know.
-			bot.sendMessage( {
-				to: channelId
-				, message: ':sos: <@' + configuration.adminUserId + '>! An error occured:\ngetCurrentGameTime(): ' + err
-			} );
+			messageObject.reply('<@' + configuration.adminUserId + '>:\n:sos: **An error occured!**\n getCurrentGameTime(): ' + err)
+			writeLog( err, 'Error' )
 		}
 	} else if ( command === configuration.commandPrefix + 'restart' ) { // public
 		writeLog( 'Restart command given by admin', 'Administrative' )
-		bot.sendMessage( {
-			to: channelId
-			, message: ':wave:'
-		}, function( error, response ) {
-			writeLog( 'Restarting!', 'Shutdown' )
-			process.exit( 0 )
-		} )
+		messageObject.reply(':wave:')
+		messageObject.channel.stopTyping(true) // forcibly stop typing in the issued channel. here in case we're being restarted because the bot got stuck typing.
+		.then( process.exit(0) )
 	}
 	if ( userId.toString() == configuration.adminUserId ) { //admin commands
 		if ( command === configuration.commandPrefix + 'botmanagement' ) {
 			try {
-				botManagement( argument, embeddedObject => {
-					bot.sendMessage( {
-						to: channelId
-						, embed: embeddedObject
+				botManagement( commandArgument, embeddedObject => {
+					messageObject.reply( {
+						embed: embeddedObject
 					} );
 				} );
-				writeLog( 'BotAdmin ran botManagement('+argument+') successfully', 'Discord' )
+				writeLog( 'BotAdmin ran botManagement('+commandArgument+') successfully', 'Discord' )
 			} catch ( err ) {
-				bot.sendMessage( {
-					to: channelId
-					, message: '<@' + configuration.adminUserId + '>:\n:sos: **An error occured!**\n discordBotManage(): `' + err + '`'
-				} )
+				messageObject.reply('<@' + configuration.adminUserId + '>:\n:sos: **An error occured!**\n discordBotManage(): `' + err + '`')
 				writeLog( err, 'Error' )
 			}
 		}
 	}
+}
+
+
+
+// DISCORD BOT INTERFACES
+const client = new Discord.Client();
+
+client.on('ready', () => {
+	writeLog( 'User ID: ' + client.user.id + ' Bot User: ' + client.user.tag, 'Discord' );
+	writeLog( 'Add to your server using this link: ', 'Discord' );
+	writeLog( ' https://discordapp.com/oauth2/authorize?client_id=' + client.user.id + '&scope=bot&permissions=104321088 ', 'Discord' );
+	writeLog( '*** Bot ready! ***', 'Discord' );
+	client.presence = configuration.currentGame
+	//client.guilds.fetch().then(writeLog('Guilds cache retrieved.',"Discord")) // fetch all guilds ahead of time.
+});
+
+client.on('message', msg => {
+	processMessage(msg)
+});
+
+client.once( 'ready', () => {
+	debugChannel = client.channels.resolve(configuration.channelId)
+	debugChannel.send(':ok: ' + botName + ' `v' + botVersion + '` by '+ botAuthor +' Back online! Type `' + configuration.commandPrefix + 'help` for a list of commands.')
 } );
 
-bot.on( 'disconnect', function( errMessage, code ) { // disconnect handling, reconnects unless shut down by restart
-	writeLog( 'Disconnected from Discord! Code: ' + code + ', Reason: ' + errMessage, 'Error' )
-	setTimeout(bot.connect, 15000) // waits 15 seconds before attempting to reconnect
-} );
-
-bot.once( 'ready', () => {
-	bot.sendMessage( {
-		to: configuration.channelId
-		, message: ':ok: ' + botName + ' `v' + botVersion + '` by '+ botAuthor +' Back online! Type `' + configuration.commandPrefix + 'help` for a list of commands.'
-	} );
-} );
+client.login(configuration.authToken);

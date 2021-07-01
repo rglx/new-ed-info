@@ -1,23 +1,21 @@
-{"configuration": {
-        "commandPrefix": "/",
-        "authToken": "Paste your auth token from discordapp's bot page here.",
-        "adminUserId": "admin's Discord UserID",
-        "channelId": "channelID of channel you're locking inara lookups to", 
-        "serverId": "serverID that automatic messages are locked to",
-        "nickname": "Bot Nickname Here",
-        "currentGame": "Example Current Game Status Message Set on Bot Start",
-        "replaceCommands": {
-            "replace1": "This will automatically have a message sent (with an optional few words before it) whenever you say `/replace1` in a channel"
-        },
-        "icons": {
-            "boticon": "link to an image, PNG or JPG"
-            "inarasearch": "link to an image, PNG or JPG"
-            "edsm": "link to an image, PNG or JPG"
-            "gametime": "link to an image, PNG or JPG"
-            "gears": "link to an image, PNG or JPG"
-            "help": "link to an image, PNG or JPG"
-        },
-        "inaraCookieElitesheet": "Get this from your cookie storage in your browser. Should be from inara.cz, called 'elitesheet'",
-        "inaraCookieEsid": "Get this from your cookie storage in your browser. Should be from inara.cz, called 'esid'"
-    }
+{
+	"configuration": {
+		"commandPrefix": "/",
+		"authToken": "Paste your auth token from discordapp's bot page here.",
+		"adminUserId": "your user id",
+		"channelId": "id of channel to report issues to",
+		"currentGame": "Example Current Game Status Message Set on Bot Start",
+
+		"icons": {
+			"boticon": "https://raw.githubusercontent.com/rglx/new-ed-info/master/icons/ed-info.png",
+			"inarasearch": "https://raw.githubusercontent.com/rglx/new-ed-info/master/icons/inarasearch.png",
+			"edsm": "https://raw.githubusercontent.com/rglx/new-ed-info/master/icons/edsmsearch.png",
+			"gametime": "https://raw.githubusercontent.com/rglx/new-ed-info/master/icons/gametime.png",
+			"gears": "https://raw.githubusercontent.com/rglx/new-ed-info/master/icons/engineering.png",
+			"help": "https://raw.githubusercontent.com/rglx/new-ed-info/master/icons/help-icon.png"
+		},
+		
+		"inaraCookieElitesheet": "Get this from your cookie storage in your browser. Should be from inara.cz, called 'elitesheet'",
+		"inaraCookieEsid": "Get this from your cookie storage in your browser. Should be from inara.cz, called 'esid'"
+	}
 }

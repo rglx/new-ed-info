@@ -1,10 +1,10 @@
 # new-ed-info
 
-E:D Info Bot, a Discord bot for Elite: Dangerous groups.
+E:D Info Bot, a Discord bot for Elite: Dangerous groups to perform quick lookups of small pieces of data.
 
-# This project is discontinued.
+# Please read.
 
-Sorry. Discord's suspicious activities with user data continue to prevent me from mustering the motivation to develop things to enrich their platform with. Feel free to fork and modify this project to your needs.
+Discord's suspicious activities with user data continue to prevent me from mustering the motivation to develop things to enrich their platform with. This project continues under protest of those actions, and as such, will be entirely subject to being discontinued at any time.
 
 ## Features
 
@@ -30,15 +30,15 @@ https://nodejs.org/en/download/current/
 
 3. Install your dependencies:
 
-```npm install Woor/discord.io#gateway_v6 config mathjs request```
+```npm install discord.js config mathjs request```
 
-Uses the following libraries:
-- [Woor's fork of izy521's `discord.io`](<https://github.com/Woor/discord.io/tree/gateway_v6>)
+Uses the following libraries (and their dependencies):
+- [`discord.js`](<https://www.npmjs.com/package/discord.io>))
 - [`config`](<https://www.npmjs.com/package/config>)
 - [`mathjs`](<https://www.npmjs.com/package/mathjs>)
 - [`request`](<https://www.npmjs.com/package/request>)
-- node's internal library `fs`
-- node's internal library `path`
+- nodejs internal library `fs`
+- nodejs internal library `path`
 
 ## Configuration
 
@@ -62,6 +62,6 @@ INARA's configuration with this bot is a little more complex. You need essential
 
 See the `!help` and `!botmanagement help` commands for actual usage.
 
-## [To-do](<https://github.com/DJArghlex/new-ed-info/issues?q=label%3Aenhancement+>)
+## [To-do](<https://github.com/rglx/new-ed-info/issues?q=label%3Aenhancement+>)
 
 

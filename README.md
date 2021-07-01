@@ -1,10 +1,10 @@
 # new-ed-info
 
-E:D Info Bot, a Discord bot for Elite: Dangerous groups to perform quick lookups of small pieces of data.
+E:D Info Bot, a Discord bot for Elite: Dangerous groups to perform quick lookups of small pieces of data. Mirrors functions on a bot by Bermos that existed waaaay long ago.
 
 # Please read.
 
-Discord's suspicious activities with user data continue to prevent me from mustering the motivation to develop things to enrich their platform with. This project continues under protest of those actions, and as such, will be entirely subject to being discontinued at any time.
+Discord's suspicious activities with user data continue to prevent me from mustering the motivation to develop things to enrich their platform with. This project continues under protest of those actions, and as such, could be discontinued at any time.
 
 ## Features
 
@@ -13,6 +13,7 @@ Discord's suspicious activities with user data continue to prevent me from muste
 - INARA CMDR lookups
 - In-universe clock
 - Open-sourced and auditable by the end user
+- More features coming soon.
 
 ## Installation
 
@@ -26,14 +27,21 @@ You need tmux or screen, and bash. That's pretty much it.
 
 https://nodejs.org/en/download/current/
 
-*Note: I run the bot under the latest releases (at time of writing that is v10.9.0) of node, but the LTS release should do just fine.*
+You can also use ```nvm``` (Recommended) to keep your nodejs install contained:
 
-3. Install your dependencies:
+https://github.com/nvm-sh/nvm
 
-```npm install discord.js config mathjs request```
+*Note: I run the bot under whatever LTS release is current.*
+
+3. Download & Install:
+
+```bash
+git clone https://github.com/rglx/new-ed-info.git
+npm install
+```
 
 Uses the following libraries (and their dependencies):
-- [`discord.js`](<https://www.npmjs.com/package/discord.io>))
+- [`discord.js`](<https://discord.js.org/>)
 - [`config`](<https://www.npmjs.com/package/config>)
 - [`mathjs`](<https://www.npmjs.com/package/mathjs>)
 - [`request`](<https://www.npmjs.com/package/request>)
@@ -42,11 +50,11 @@ Uses the following libraries (and their dependencies):
 
 ## Configuration
 
-1. Create an application **and a bot user** for your bot at [Discord's developer applications portal](<https://discordapp.com/developers/applications/me>) then copy in the token to the bot's configuration.
+1. Create an application **and a bot presence** for your bot at [Discord's developer applications portal](<https://discordapp.com/developers/applications/me>) then copy in the token (for the bot user specifically) to the bot's configuration in `config/default.json`
 
 2. INARA
 
-INARA's configuration with this bot is a little more complex. You need essentially a separate account to run the bot's queries through, as I have not updated it for the new inara API systems. This will remain undocumented, as it's a real pain to set up properly. You essentially feed the bot the two cookies that INARA sets in your browser once you log in (which i recommend doing with a totally separate browser, or incognito mode, without any passwords for it saved in your browser's password storage) via `config/default.json`. These change every time you "log in", which means almost every single time you open INARA your old tokens will be invalidated, essentially breaking the bot's ability to look at things in INARA's search.
+INARA's configuration with this bot is a little more complex. You need essentially a separate INARA account to run the bot's queries through, as I have not updated it for the new inara API systems. This will remain undocumented, as it's a real pain to set up properly. You essentially feed the bot the two cookies that INARA sets in your browser once you log in through a separate browser, then copying those into `config/default.json`. These change every time you log in or out of INARA, or are invalidated after certain periods of time, which means you need to be around to keep them updated.
 
 *Sorry artie, i'll get it updated soon*
 
@@ -60,7 +68,7 @@ INARA's configuration with this bot is a little more complex. You need essential
 5. Configure its permissions for the channel you set in the config.
 3. You're good to go!
 
-See the `!help` and `!botmanagement help` commands for actual usage.
+See the `!help` and `!botmanagement help` commands for usage.
 
 ## [To-do](<https://github.com/rglx/new-ed-info/issues?q=label%3Aenhancement+>)
 

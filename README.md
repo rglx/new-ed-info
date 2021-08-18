@@ -70,6 +70,6 @@ INARA's configuration with this bot is a little more complex. You need essential
 
 See the `!help` and `!botmanagement help` commands for usage.
 
-## [To-do](<https://github.com/rglx/new-ed-info/issues?q=label%3Aenhancement+>)
+## [To-do](/../../issues?q=label%3Aenhancement)
 
 

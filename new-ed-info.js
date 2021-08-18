@@ -1,5 +1,5 @@
 // E:D Info Discord Bot
-// by CMDRs DJ Arghlex & willyb321
+// by CMDRs rglx & willyb321
 
 // DEPENDENCIES
 console.log( 'Loading dependencies' );
@@ -14,7 +14,7 @@ const config = require( 'config' ); // Install using npm
 console.log( 'Loading configuration' );
 const configuration = config.get( 'configuration' );
 const botName = 'New E:D Info'
-const botAuthor = 'CMDRs DJ Arghlex and willyb321';
+const botAuthor = 'CMDRs rglx and willyb321';
 const botVersion = '3.3.1beta1'
 
 // FUNCTIONS
@@ -91,7 +91,7 @@ function getCmdrInfoFromInara( name, callback ) { // Search inara for a CMDR, do
 	const cmdrDetailsTableRegexp = /<span class="pflcellname">(.*?)<\/span><br>(.*?)<\/td>/gi; // commander profile table grabber
 	const loginToSearchRegexp = /You must be logged in to view search results.../; // "login to search" error message
 	const cmdrDetailsTableSquadronLinkRegexp = /<a href="\/squadron\/(\d+)\/" class="nocolor">(.*?)<\/a>/i; // squadron name
-	const cmdrDetailsTableCreditStringDeformatting = /<span class="minor crly">(.*?)<\/span>/ // "cr" formatting
+	const cmdrDetailsTableCreditStringDeformatting = /<span class="minor">(.*?)<\/span>/ // "cr" formatting
 
 	try {
 		getInaraPage( 'search?search=' + encodeURIComponent( name ), searchResults => {

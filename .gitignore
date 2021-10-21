@@ -2,6 +2,7 @@
 logs
 *.log
 npm-debug.log*
+*.sublime-workspace
 
 # bot config
 config/production.json

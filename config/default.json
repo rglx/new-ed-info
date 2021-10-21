@@ -1,10 +1,14 @@
-{
-	"configuration": {
+{"configuration": {
 		"commandPrefix": "/",
-		"authToken": "Paste your auth token from discordapp's bot page here.",
-		"adminUserId": "your user id",
-		"channelId": "id of channel to report issues to",
-		"currentGame": "Example Current Game Status Message Set on Bot Start",
+		"authToken": "Authorization Token from your bot's user page on Discord's Developer Applications page.",
+
+		"adminUserId": "your Discord UserID",
+		"channelId": "Debug Channel ID",
+
+		"currentGame": "Example Game Text",
+		"currentPresenceState": "more lines!",
+		"currentPresenceDetails": "even more lines!",
+
 
 		"icons": {
 			"boticon": "https://raw.githubusercontent.com/rglx/new-ed-info/master/icons/ed-info.png",
@@ -14,8 +18,8 @@
 			"gears": "https://raw.githubusercontent.com/rglx/new-ed-info/master/icons/engineering.png",
 			"help": "https://raw.githubusercontent.com/rglx/new-ed-info/master/icons/help-icon.png"
 		},
-		
-		"inaraCookieElitesheet": "Get this from your cookie storage in your browser. Should be from inara.cz, called 'elitesheet'",
-		"inaraCookieEsid": "Get this from your cookie storage in your browser. Should be from inara.cz, called 'esid'"
+
+		"inaraCookieElitesheet": "inara cookie copied from an alt account on inara, elitesheet",
+		"inaraCookieEsid": "inara cookie copied from an alt account on inara, esid"
 	}
 }

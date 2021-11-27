@@ -179,8 +179,8 @@ module.exports = {
 			//throw err // we don't wanna do this because it'll clobber our existing embed. let's just update the embed instead of having the bot's command handler pulverise it.
 
 			returnedEmbedObject.description = "__More information__" + "\n"
-			returnedEmbedObject.description += "Inara: <https://inara.cz/starsystem/?search=" + edsmSystemInfo.name + ">" + "\n"
-			returnedEmbedObject.description += "EDSM: <https://www.edsm.net/en/system/id/" + edsmSystemInfo.id + "/name/" + edsmSystemInfo.name + "/>" + "\n"
+			returnedEmbedObject.description += "Inara: <https://inara.cz/starsystem/?search=" + encodeURIComponent( edsmSystemInfo.name ) + ">" + "\n"
+			returnedEmbedObject.description += "EDSM: <https://www.edsm.net/en/system/id/" + encodeURIComponent( edsmSystemInfo.id ) + "/name/" + edsmSystemInfo.name + "/>" + "\n"
 			returnedEmbedObject.description += "EDDB: ❌ *[KodeBlox's API unreachable.]*"
 
 			// overwrite some stuff

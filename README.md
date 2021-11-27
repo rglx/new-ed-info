@@ -17,7 +17,7 @@ Discord's suspicious activities with user data continue to prevent me from muste
 
 ## Installation
 
-**If this is too much horsing around for a single Discord bot, I run an instance of the bot myself. [Here's the invite link.](<https://discordapp.com/oauth2/authorize?client_id=421397320907620362&scope=bot&permissions=104321088>)**
+**If this is too much horsing around for a single Discord bot, I run an instance of the bot myself. [Here's the invite link.](<https://discord.com/oauth2/authorize?client_id=421397320907620362&permissions=2415935520&scope=applications.commands%20bot>)**
 
 1. Install basic system utilities
 

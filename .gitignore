@@ -3,12 +3,14 @@ logs
 *.log
 npm-debug.log*
 *.sublime-workspace
-
-# bot config
-config/production.json
+/start.sh
+/config.json
+/cache.json
+package-lock.json
 
 # Runtime data
 pids
+*.lck
 *.pid
 *.seed
 

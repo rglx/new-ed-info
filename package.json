@@ -1,8 +1,30 @@
 {
   "dependencies": {
-    "config": "^3.3.6",
-    "discord.js": "^13.1.0",
-    "mathjs": "^9.4.4",
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "discord-api-types": "^0.24.0",
+    "discord.js": "^13.3.1",
+    "mathjs": "^10.0.0",
     "request": "^2.88.2"
-  }
+  },
+  "name": "new-ed-info",
+  "version": "4.1.0",
+  "description": "elite dangerous discord bot",
+  "main": "new-ed-info.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "node deploy-commands.js && node new-ed-info.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rglx/new-ed-info.git"
+  },
+  "keywords": [
+    "elite dangerous",
+    "discord bot"
+  ],
+  "author": "rglx",
+  "bugs": {
+    "url": "https://github.com/rglx/new-ed-info/issues"
+  },
+  "homepage": "https://github.com/rglx/new-ed-info#readme"
 }

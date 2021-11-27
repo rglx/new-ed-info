@@ -1,0 +1,18 @@
+{
+	"clientId": "1234567890123456",
+	"guildId": "1234567890123456",
+	"adminUserId": "1234567890123456",
+	"channelId": "1234567890123456",
+	"authToken": "sample bot authToken",
+
+	"iconUrlPrefix": "https://raw.githubusercontent.com/rglx/new-ed-info/master/icons/",
+	"currentGame": "sample current game text",
+
+	"guildOnlyCommandFiles": [
+		"botmanagement.js",
+		"restart.js"
+	],
+
+	"inaraCookieElitesheet": "sample inara elitesheet cookie",
+	"inaraCookieEsid": "sample inara esid cookie"
+}

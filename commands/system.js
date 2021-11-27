@@ -57,8 +57,8 @@ module.exports = {
 		
 		// update description field with an EDDB link
 		returnedEmbedObject.description = "__More information__" + "\n"
-		returnedEmbedObject.description += "Inara: <https://inara.cz/starsystem/?search=" + edsmSystemInfo.name + ">" + "\n"
-		returnedEmbedObject.description += "EDSM: <https://www.edsm.net/en/system/id/" + edsmSystemInfo.id + "/name/" + edsmSystemInfo.name + "/>" + "\n"
+		returnedEmbedObject.description += "Inara: <https://inara.cz/starsystem/?search=" + encodeURIComponent(edsmSystemInfo.name) + ">" + "\n"
+		returnedEmbedObject.description += "EDSM: <https://www.edsm.net/en/system/id/" + encodeURIComponent(edsmSystemInfo.id) + "/name/" + edsmSystemInfo.name + "/>" + "\n"
 
 		returnedEmbedObject.description += "EDDB: 🔄 *[querying KodeBlox's EDDB API for system id]*" + "\n"
 		//returnedEmbedObject.description += "eBGS: 🔄 *[querying KodeBlox's EDDB API for eBGS uuid]*" + "\n"

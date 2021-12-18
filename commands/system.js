@@ -23,11 +23,12 @@ module.exports = {
 			timestamp,
 			footer: {
 				text: interaction.guild.me.displayName,
-				icon_url: configuration.iconUrlPrefix + "ed-info.png"
+				icon_url: configuration.iconUrlPrefix + "avatar.png"
 			},
 			author: {
-				name: "System Information",
-				icon_url: configuration.iconUrlPrefix + interaction.commandName + ".png"
+				name: "System Information - Support eBGS!",
+				icon_url: configuration.iconUrlPrefix + interaction.commandName + ".png",
+				url: "https://elitebgs.app/donate"
 			},
 			color: 0x16475B,
 			title: "",
@@ -40,7 +41,7 @@ module.exports = {
 
 		let edsmSystemInfo = JSON.parse(await synchronousDownloadPage( {
 			url: "https://www.edsm.net/api-v1/system?showId=1&showCoordinates=1&showPermit=1&showInformation=1&showPrimaryStar=1&systemName=" + encodeURIComponent( input ),
-			headers: { "User-Agent": "New E:D Info Bot v4.1.0beta1 by rglx" },
+			headers: { "User-Agent": "New E:D Info Bot v4.1.0 by rglx" },
 			timeout: 5000
 		} ) )
 		//console.log(edsmSystemInfo)
@@ -58,10 +59,10 @@ module.exports = {
 		// update description field with an EDDB link
 		returnedEmbedObject.description = "__More information__" + "\n"
 		returnedEmbedObject.description += "Inara: <https://inara.cz/starsystem/?search=" + encodeURIComponent(edsmSystemInfo.name) + ">" + "\n"
-		returnedEmbedObject.description += "EDSM: <https://www.edsm.net/en/system/id/" + encodeURIComponent(edsmSystemInfo.id) + "/name/" + edsmSystemInfo.name + "/>" + "\n"
+		returnedEmbedObject.description += "EDSM: <https://www.edsm.net/en/system/id/" + encodeURIComponent(edsmSystemInfo.id) + "/name/" + encodeURIComponent(edsmSystemInfo.name) + "/>" + "\n"
 
-		returnedEmbedObject.description += "EDDB: 🔄 *[querying KodeBlox's EDDB API for system id]*" + "\n"
-		//returnedEmbedObject.description += "eBGS: 🔄 *[querying KodeBlox's EDDB API for eBGS uuid]*" + "\n"
+		returnedEmbedObject.description += "EDDB: 🔄 *[querying Garud's EDDB API for system id]*" + "\n"
+		//returnedEmbedObject.description += "eBGS: 🔄 *[querying Garud's EDDB API for eBGS uuid]*" + "\n"
 
 		let economyInformation = { name: "__🪙 Economy__", value: "", inline: true }// economy1, economy2, systemstate, systemreserves
 		let factionInformation = { name: "__👥 Controlled by__", value: "", inline: true } // factionname, allegiance, government
@@ -144,7 +145,7 @@ module.exports = {
 		}
 
 		// since we have to harass garud's API a whole bunch let's just show this for now
-		dockablesInformation.value += "🔄 *[querying KodeBlox's EDDB API for station list...]*"
+		dockablesInformation.value += "🔄 *[querying Garud's EDDB API for station list...]*"
 
 
 		// okay, now add our constructed embed-fields to the embed object 
@@ -168,26 +169,26 @@ module.exports = {
 
 		// begin querying eddb
 		let eddbSystemInfo = JSON.parse(await synchronousDownloadPage( {
-			url: "https://eddbapi.kodeblox.com/api/v4/systems?name=" + encodeURIComponent( edsmSystemInfo.name ),
-			headers: { "User-Agent": "New E:D Info Bot v4.1.0beta1 by rglx" },
+			url: "https://eddbapi.kodeblox.com/api/v4/systems?name=" + encodeURIComponent(edsmSystemInfo.name),
+			headers: { "User-Agent": "New E:D Info Bot v4.1.0 by rglx" },
 			timeout: 5000
 		} ) )
 
 		if (!eddbSystemInfo) {
-			let err = "Could not contact KodeBlox's EDDB API!"
+			let err = "Could not contact Garud's EDDB API!"
 			writeLog(err,"/" + interaction.commandName,console.error)
 			//throw err // we don't wanna do this because it'll clobber our existing embed. let's just update the embed instead of having the bot's command handler pulverise it.
 
 			returnedEmbedObject.description = "__More information__" + "\n"
-			returnedEmbedObject.description += "Inara: <https://inara.cz/starsystem/?search=" + encodeURIComponent( edsmSystemInfo.name ) + ">" + "\n"
-			returnedEmbedObject.description += "EDSM: <https://www.edsm.net/en/system/id/" + encodeURIComponent( edsmSystemInfo.id ) + "/name/" + edsmSystemInfo.name + "/>" + "\n"
-			returnedEmbedObject.description += "EDDB: ❌ *[KodeBlox's API unreachable.]*"
+			returnedEmbedObject.description += "Inara: <https://inara.cz/starsystem/?search=" + encodeURIComponent(edsmSystemInfo.name) + ">" + "\n"
+			returnedEmbedObject.description += "EDSM: <https://www.edsm.net/en/system/id/" + encodeURIComponent(edsmSystemInfo.id) + "/name/" + encodeURIComponent(edsmSystemInfo.name) + "/>" + "\n"
+			returnedEmbedObject.description += "EDDB: ❌ *[Garud's EDDB API unreachable.]*"
 
 			// overwrite some stuff
 			if (edsmSystemInfo.information.population > 0) {
-				dockablesInformation.value = "System population: " + edsmSystemInfo.information.population.toLocaleString("en-US") + "\n" + "❌ *[KodeBlox's API unreachable.]*"
+				dockablesInformation.value = "System population: " + edsmSystemInfo.information.population.toLocaleString("en-US") + "\n" + "❌ *[Garud's EDDB API unreachable.]*"
 			} else {
-				dockablesInformation.value = "System is unpopulated." + "\n" + "❌ *[KodeBlox's API unreachable.]*"
+				dockablesInformation.value = "System is unpopulated." + "\n" + "❌ *[Garud's EDDB API unreachable.]*"
 			}
 
 			// update the embed
@@ -209,8 +210,8 @@ module.exports = {
 
 		// update description field with an EDDB link
 		returnedEmbedObject.description = "__More information__" + "\n"
-		returnedEmbedObject.description += "Inara: <https://inara.cz/starsystem/?search=" + edsmSystemInfo.name + ">" + "\n"
-		returnedEmbedObject.description += "EDSM: <https://www.edsm.net/en/system/id/" + edsmSystemInfo.id + "/name/" + edsmSystemInfo.name + "/>" + "\n"
+		returnedEmbedObject.description += "Inara: <https://inara.cz/starsystem/?search=" + encodeURIComponent(edsmSystemInfo.name) + ">" + "\n"
+		returnedEmbedObject.description += "EDSM: <https://www.edsm.net/en/system/id/" + edsmSystemInfo.id + "/name/" + encodeURIComponent(edsmSystemInfo.name) + "/>" + "\n"
 		returnedEmbedObject.description += "EDDB: <https://eddb.io/system/" + eddbSystemInfo.docs[0].id + ">" + "\n"
 		//returnedEmbedObject.description += "eBGS: <https://elitebgs.app/systems/" + eddbSystemInfo.docs[0]._id + ">" + "\n"
 
@@ -228,8 +229,8 @@ module.exports = {
 
 		let eddbFullStationsList = [{}]
 		eddbFullStationsList[1] = JSON.parse(await synchronousDownloadPage( {
-			url: "https://eddbapi.kodeblox.com/api/v4/stations?systemname=" + encodeURIComponent( edsmSystemInfo.name ),
-			headers: { "User-Agent": "New E:D Info Bot v4.1.0beta1 by rglx" },
+			url: "https://eddbapi.kodeblox.com/api/v4/stations?systemname=" + encodeURIComponent(edsmSystemInfo.name) + "&governmentname=anarchy,communism,confederacy,cooperative,corporate,democracy,dictatorship,feudal,imperial,none,patronage,prison%20colony,theocracy,engineer",
+			headers: { "User-Agent": "New E:D Info Bot v4.1.0 by rglx" },
 			timeout: 5000
 		} ) )
 		
@@ -240,8 +241,8 @@ module.exports = {
 			for (let pageNumber = 2; pageNumber < (eddbFullStationsList[1].pages+1); pageNumber++) {
 				writeLog("retrieving station list, page "+ pageNumber,"EDDB API")
 				eddbFullStationsList[pageNumber] = JSON.parse(await synchronousDownloadPage( {
-					url: "https://eddbapi.kodeblox.com/api/v4/stations?page="+pageNumber+"&systemname=" + encodeURIComponent( edsmSystemInfo.name ),
-					headers: { "User-Agent": "New E:D Info Bot v4.1.0beta1 by rglx" },
+					url: "https://eddbapi.kodeblox.com/api/v4/stations?page="+pageNumber+"&systemname=" + encodeURIComponent( edsmSystemInfo.name ) + "&governmentname=anarchy,communism,confederacy,cooperative,corporate,democracy,dictatorship,feudal,imperial,none,patronage,prison%20colony,theocracy,engineer",
+					headers: { "User-Agent": "New E:D Info Bot v4.1.0 by rglx" },
 					timeout: 5000
 				} ) )
 			}
@@ -287,21 +288,65 @@ module.exports = {
 		} else {
 			dockablesInformation.value = "Unpopulated\n"
 		}
+		
+		// apply shipyards count
+		dockablesInformation.value += "Inter-Astra Starports in-system: **`"+shipyardsInSystem+"`**\n"
 
-
+		// apply our station list (or a 'no stations listed on eddb' error)
 		if (presentStationTypes != {}) {
-			// some stations are present! wow!
-			dockablesInformation.value += "Inter-Astra Starports in-system: **`"+shipyardsInSystem+"`**\n"
+			// system actually has some stations! lets list 'em.
 
-			dockablesInformation.value += "Types of starports in system:\n"
-			dockablesInformation.value += "```"
+			let stationListing = "Types of starports in system:\n"
+			stationListing += "```"
 			for (const [key, value] of Object.entries(presentStationTypes)) {
-				dockablesInformation.value += key + "s ("+value.length+"): " + value.join(", ") + "\n"
+				stationListing += key + "s ("+value.length+"): " + value.join(", ") + "\n"
+				writeLog(key + "s ("+value.length+"): " + value.join(", "), "station listing debug")
 			}
-			dockablesInformation.value += " ```" // needs an extra space in case there aren't any stations.
+			stationListing += " ```" // needs an extra space in case there aren't any stations.
+			//writeLog(stationListing)
+
+			if ( ( dockablesInformation.value.length + stationListing.length ) > 1024 ) {
+				// first step is to drop the fleet carriers listing and hope that works
+				writeLog("station list exceeding 1024 characters. dropping fleet carriers' name listings.")
+				stationListing = "Types of starports in system:\n"
+				stationListing += "```"
+				for (const [key, value] of Object.entries(presentStationTypes)) {
+					if ( key == "fleet carrier" ) {
+						stationListing += key + "s: " + value.length + "\n" // don't show fleet carrier IDs
+					} else {
+						stationListing += key + "s ("+value.length+"): " + value.join(", ") + "\n"
+					}
+				}
+				stationListing += " ```" // needs an extra space in case there aren't any stations.
+				//writeLog(stationListing)
+			}
+
+			if ( ( dockablesInformation.value.length + stationListing.length ) > 1024 ) {
+				// first step is to drop the fleet carriers listing and hope that works
+				writeLog("station list STILL exceeding 1024 characters. dropping all station name listings.")
+				stationListing = "Types of starports in system:\n"
+				stationListing += "```"
+				for (const [key, value] of Object.entries(presentStationTypes)) {
+					stationListing += key + "s: " + value.length + "\n" // don't show any station names
+				}
+				stationListing += " ```" // needs an extra space in case there aren't any stations.
+				//writeLog(stationListing)
+			}
+
+			if ( ( dockablesInformation.value.length + stationListing.length ) > 1024 ) {
+				// first step is to drop the fleet carriers listing and hope that works
+				writeLog("station list IS STILL exceeding 1024 characters. showing an error message.")
+				stationListing = "Types of starports in system:\n ❌ *[Too many starports in-system. Please view the list on EDDB.]*"
+				//writeLog(stationListing)
+			}
+
+			// and finally, append the station listing.
+			dockablesInformation.value += stationListing
+
 		}else{
 			dockablesInformation.value += "No stations reported by EDDB.\n*Note: Uninhabited systems with fleet carriers aren't tracked.*"
 		}
+
 		// re-apply all our embed-fields
 		if (economyInformation.value != "") { returnedEmbedObject.fields.push(economyInformation) }
 		if (factionInformation.value != "") { returnedEmbedObject.fields.push(factionInformation) }

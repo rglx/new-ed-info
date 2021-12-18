@@ -27,11 +27,12 @@ module.exports = {
 			timestamp,
 			footer: {
 				text: interaction.guild.me.displayName,
-				icon_url: configuration.iconUrlPrefix + "ed-info.png"
+				icon_url: configuration.iconUrlPrefix + "avatar.png"
 			},
 			author: {
-				name: "System Distance Finder" ,
-				icon_url: configuration.iconUrlPrefix + interaction.commandName + ".png"
+				name: "System Distance Finder - Support EDSM!" ,
+				icon_url: configuration.iconUrlPrefix + interaction.commandName + ".png",
+				url: "https://www.patreon.com/bePatron?u=4682480"
 			},
 			color: 0x68BEDD,
 			title: "",
@@ -46,12 +47,12 @@ module.exports = {
 
 		let system1info = JSON.parse( await synchronousDownloadPage( {
 			url: "https://www.edsm.net/api-v1/system?showCoordinates=1&systemName=" + encodeURIComponent( system1 ),
-			headers: { "User-Agent": "New E:D Info Bot v4.1.0beta1 by rglx" },
+			headers: { "User-Agent": "New E:D Info Bot v4.1.0 by rglx" },
 			timeout: 5000
 		} ) )
 		let system2info = JSON.parse( await synchronousDownloadPage( {
 			url: "https://www.edsm.net/api-v1/system?showCoordinates=1&systemName=" + encodeURIComponent( system2 ),
-			headers: { "User-Agent": "New E:D Info Bot v4.1.0beta1 by rglx" },
+			headers: { "User-Agent": "New E:D Info Bot v4.1.0 by rglx" },
 			timeout: 5000
 		} ) )
 

@@ -16,7 +16,7 @@ module.exports = {
 				timestamp,
 				footer: {
 					text: interaction.guild.me.displayName,
-					icon_url: configuration.iconUrlPrefix + "ed-info.png"
+					icon_url: configuration.iconUrlPrefix + "avatar.png"
 				},
 				author: {
 					name: "Current In-Game Time" ,

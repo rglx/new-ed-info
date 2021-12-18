@@ -5,7 +5,7 @@ const request = require("request")
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName("whois-inara")
+		.setName("whois")
 		.setDescription("Look up a commander on INARA.")
 		.addStringOption(option =>
 			option.setName("cmdr")

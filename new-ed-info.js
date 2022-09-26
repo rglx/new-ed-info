@@ -8,6 +8,7 @@ const { Client, Collection, Intents } = require("discord.js")
 
 console.log( "loading configuration..." )
 const configuration = require("./config.json")
+const package = require("./package.json")
 
 console.log( "defining base functions..." )
 function writeLog( message, prefix, printFunction ) {

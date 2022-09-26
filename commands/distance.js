@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 const configuration = require("../config.json")
+const package = require("../package.json")
 const fs = require("fs")
 const request = require("request")
 const mathjs = require("mathjs")
@@ -47,12 +48,12 @@ module.exports = {
 
 		let system1info = JSON.parse( await synchronousDownloadPage( {
 			url: "https://www.edsm.net/api-v1/system?showCoordinates=1&systemName=" + encodeURIComponent( system1 ),
-			headers: { "User-Agent": "New E:D Info Bot v4.1.0 by rglx" },
+			headers: { "User-Agent": package.description + " v" + package.version + " by " + package.author },
 			timeout: 5000
 		} ) )
 		let system2info = JSON.parse( await synchronousDownloadPage( {
 			url: "https://www.edsm.net/api-v1/system?showCoordinates=1&systemName=" + encodeURIComponent( system2 ),
-			headers: { "User-Agent": "New E:D Info Bot v4.1.0 by rglx" },
+			headers: { "User-Agent": package.description + " v" + package.version + " by " + package.author },
 			timeout: 5000
 		} ) )
 
@@ -102,7 +103,7 @@ module.exports = {
 
 		let shipTransferInfoText  = "**Time**: " + shipTransferTime + "\n"
 		shipTransferInfoText += "**Cost**: "+ shipTransferCostPercentage.toFixed(4) +"% of ship value\n"
-		shipTransferInfoText += "**Find a Shipyard**: <https://inara.cz/nearest-stations/?pa1%5B14%5D=1>"
+		shipTransferInfoText += "**Shipyards near " + system2info.name + "**: <https://inara.cz/elite/nearest-stations/?formbrief=1&pi2=1&pa1%5B%5D=14&ps1=" + system2info.name + ">"
 		carrierJumpFuelUseString = carrierJumpFuelData[0] + " to " + carrierJumpFuelData[1] + " tons"
 
 

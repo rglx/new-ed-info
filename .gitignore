@@ -3,10 +3,10 @@ logs
 *.log
 npm-debug.log*
 *.sublime-workspace
-/start.sh
 /config.json
 /cache.json
-package-lock.json
+/package-lock.json
+/squadronGuildAssoc.json
 
 # Runtime data
 pids

@@ -7,8 +7,8 @@
     "request": "^2.88.2"
   },
   "name": "new-ed-info",
-  "version": "4.1.0",
-  "description": "elite dangerous discord bot",
+  "version": "4.2.0",
+  "description": "New E:D Info Bot",
   "main": "new-ed-info.js",
   "devDependencies": {},
   "scripts": {
@@ -20,9 +20,10 @@
   },
   "keywords": [
     "elite dangerous",
-    "discord bot"
+    "discord",
+    "bot"
   ],
-  "author": "rglx",
+  "author": "CMDR rglx",
   "bugs": {
     "url": "https://github.com/rglx/new-ed-info/issues"
   },

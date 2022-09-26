@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 const configuration = require("../config.json")
+const package = require("../package.json")
 const fs = require("fs")
 const request = require("request")
 
@@ -20,25 +21,25 @@ module.exports = {
 
 		const searchResultsPageRegex = /Commanders found.*?\/cmdr\/(\d+)/i 										// finds first linked commander from the search results
 
-		const cmdrProfileNameRegex = /<span class="pflheadersmall">Cmdr<\/span> (.*?)<\/td>/i 					// commander name (as shown on inara)
+		const cmdrProfileNameRegex = /<span class="pflheadersmall"><a href="\/elite\/cmdr\/\d+\/" class="nocolor">Cmdr<\/span> (.*?)<\/td>/i 	// commander name (as shown on inara)
 		const cmdrProfileAvatarRegex = /<td rowspan="4" class="profileimage" >.*?<img src="(.*?)">/i 			// inara avatar
-		const cmdrDetailsTableRegex = /<span class="pflcellname">(.*?)<\/span><br>(.*?)<\/td>/gi 				// retrieves a bunch of cells from the table (specifically the title and the contents)
+		const cmdrDetailsTableRegex = /<span class="pflcellname">(.*?)<\/span><br>(.*?)(?:<\/a>)?<\/td>/gi 				// retrieves a bunch of cells from the table (specifically the title and the contents)
 
 		const loginToSearchRegex = /You must be logged in to view search results/i 								// tells us if we're not logged in to inara when we search
 
-		const cmdrDetailsTableSquadronLinkRegex = /<a href="\/squadron\/(\d+)\/" class="nocolor">(.*?)<\/a>/i 	// extracts the squadron link & name
+		const cmdrDetailsTableSquadronLinkRegex = /<a href="(\/elite\/squadron\/\d+\/)" class="nocolor">.*?<br>(.*?)<\/a>/i 	// extracts the squadron link & name
 		const cmdrDetailsTableCreditStringDeformattingRegex = /<span class="minor">(.*?)<\/span>/i 				// removes special html around 'cr' in the credit balances
 
-		const cmdrInfoPanelTableRegex = /<div class="sidesubcontentwidth50">(.*)<\/div><div class="sidesubcontentwidth100">/i 	// side panel that has more info on it
+		const cmdrInfoPanelTableRegex = /<h1 class="header">Commander info<\/h1>(.*?)<div class="maincontent0 ">/i 	// side panel that has more info on it
 
 		const cmdrInfoPanelTableContentsRegex = /<div class="itempairlabel" +style=".*?" *>(.*?)<\/div><div class="itempairvalue *" *>(.*?)<\/div>/gi // actual contents of info panel
-		const cmdrInfoPanelVerifiedBadge = /<span class="tagpositive">Verified<\/span>/i // shows that this commander name is confirmably this, ingame (we're just gonna replace it with an emoji)
+		const cmdrInfoPanelVerifiedBadge = / <span class="tag taginline positive">Verified<\/span>/i 	// shows that this commander name is confirmably this, ingame (we're just gonna replace it with an emoji)
 		const cmdrInfoPanelPlatformName = /<span class="platform.*">(.*?)<\/span>/i // converts platform indicators
 
 
 		const verifiedIndicator = " - ☑️"
-		const blankProfileImage = "https://inara.cz/images/blank.png" // if a commander's avatar is this, just don't show one.
-		const emptyFieldValues = [""," ","&nbsp;","-"] // these are considered 'empty' and shouldn't be shown in the final embed to Discord
+		const blankProfileImage = "https://inara.cz/images/dummyprofile.jpg" // if a commander's avatar is this, just don't show one.
+		const emptyFieldValues = [""," ","&nbsp;","-","</a>"] // these are considered 'empty' and shouldn't be shown in the final embed to Discord
 
 		// now let's get to work
 
@@ -66,17 +67,19 @@ module.exports = {
 		returnedEmbedObject.title = "***Searching...***"
 		returnedEmbedObject.description = "🔄 *[searching INARA for `" + cmdr + "`]*"
 
+		// we don't want to query discord's API this time
 		await interaction.editReply( {
 			embeds: [ returnedEmbedObject ],
 			ephemeral: false
 		} )
+		
 
 		// okay, now let's go query the search page on inara real quick
 
 		let inaraSearchResultsHtml = await synchronousDownloadPage({
-			url: "https://inara.cz/" + "search?search=" + encodeURIComponent( cmdr ),
+			url: "https://inara.cz/elite/search/?search=" + encodeURIComponent( cmdr ),
 			headers: { 
-				"User-Agent": "New E:D Info Bot v4.1.0 by rglx", // be nice and tell artie who we are so he can yell at us for not using the new API
+				"User-Agent": package.description + " v" + package.version + " by " + package.author, // be nice and tell artie who we are so he can yell at us for not using the new API
 				"Cookie": "esid=" + configuration.inaraCookieEsid + "; elitesheet=" + configuration.inaraCookieElitesheet // oh and also include our auth cookies
 			},
 			timeout: 5000
@@ -92,7 +95,7 @@ module.exports = {
 		}
 
 		if ( searchResultsMatches == null ) {
-			let err = "No profiles were found! Maybe their INARA profile is under another name?"
+			let err = "No profiles were found for '" + cmdr + "'! Maybe their INARA profile is under another name, or they don't have one?"
 			writeLog(err,"/" + interaction.commandName)
 			throw err
 		}
@@ -109,15 +112,17 @@ module.exports = {
 		returnedEmbedObject.title = "***Searching...***"
 		returnedEmbedObject.description = "🔄 *[profile found! retrieving <https://inara.cz/cmdr/" + profileId + "/> ...]*"
 
+		// or this time
 		await interaction.editReply( {
 			embeds: [ returnedEmbedObject ],
 			ephemeral: false
 		} )
+		
 
 		let inaraProfilePageHtml = await synchronousDownloadPage({
-			url: "https://inara.cz/" + "cmdr/" + profileId,
+			url: "https://inara.cz/" + "elite/cmdr/" + profileId,
 			headers: { 
-				"User-Agent": "New E:D Info Bot v4.1.0 by rglx", // be nice and tell artie who we are so he can yell at us for not using the new API
+				"User-Agent": package.description + " v" + package.version + " by " + package.author, // be nice and tell artie who we are so he can yell at us for not using the new API
 				"Cookie": "esid=" + configuration.inaraCookieEsid + "; elitesheet=" + configuration.inaraCookieElitesheet // oh and also include our auth cookies
 			},
 			timeout: 5000
@@ -165,7 +170,8 @@ module.exports = {
 			}
 		} );
 
-		console.log(inaraProfile)
+		//console.log(inaraProfile)
+		writeLog("found a profile for " + cmdr,"/" + interaction.commandName)
 
 		for ( entry in inaraProfile ) {
 
@@ -182,7 +188,7 @@ module.exports = {
 				inaraProfile[entry] = inaraProfile[entry].replace(cmdrInfoPanelPlatformName,"$1")
 			}
 
-			console.log(entry,"\t", inaraProfile[entry])
+			//console.log(entry,"\t", inaraProfile[entry])
 		}
 
 		if ( inaraProfile["Avatar"] != blankProfileImage ) {
@@ -257,6 +263,8 @@ module.exports = {
 		if ( playStyleEmbedField.value != "" ){ returnedEmbedObject.fields.push(playStyleEmbedField) }
 		if ( financialsEmbedField.value != "" ){ returnedEmbedObject.fields.push(financialsEmbedField) }
 		if ( demographicsEmbedField.value != "" ){ returnedEmbedObject.fields.push(demographicsEmbedField) }
+
+		writeLog("processed and sent inara profile of " + inaraProfile["INARA name"] + " (InaID:" + profileId + ")","/" + interaction.commandName)
 
 		// ok, send to discord.
 		await interaction.editReply( {

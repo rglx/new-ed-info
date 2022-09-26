@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders")
 const configuration = require("../config.json")
+const package = require("../package.json")
 const fs = require("fs")
 const request = require("request")
 
@@ -41,7 +42,7 @@ module.exports = {
 
 		let edsmSystemInfo = JSON.parse(await synchronousDownloadPage( {
 			url: "https://www.edsm.net/api-v1/system?showId=1&showCoordinates=1&showPermit=1&showInformation=1&showPrimaryStar=1&systemName=" + encodeURIComponent( input ),
-			headers: { "User-Agent": "New E:D Info Bot v4.1.0 by rglx" },
+			headers: { "User-Agent": package.description + " v" + package.version + " by " + package.author },
 			timeout: 5000
 		} ) )
 		//console.log(edsmSystemInfo)
@@ -58,7 +59,7 @@ module.exports = {
 		
 		// update description field with an EDDB link
 		returnedEmbedObject.description = "__More information__" + "\n"
-		returnedEmbedObject.description += "Inara: <https://inara.cz/starsystem/?search=" + encodeURIComponent(edsmSystemInfo.name) + ">" + "\n"
+		returnedEmbedObject.description += "Inara: <https://inara.cz/elite/starsystem/?search=" + encodeURIComponent(edsmSystemInfo.name) + ">" + "\n"
 		returnedEmbedObject.description += "EDSM: <https://www.edsm.net/en/system/id/" + encodeURIComponent(edsmSystemInfo.id) + "/name/" + encodeURIComponent(edsmSystemInfo.name) + "/>" + "\n"
 
 		returnedEmbedObject.description += "EDDB: 🔄 *[querying Garud's EDDB API for system id]*" + "\n"
@@ -169,8 +170,8 @@ module.exports = {
 
 		// begin querying eddb
 		let eddbSystemInfo = JSON.parse(await synchronousDownloadPage( {
-			url: "https://eddbapi.kodeblox.com/api/v4/systems?name=" + encodeURIComponent(edsmSystemInfo.name),
-			headers: { "User-Agent": "New E:D Info Bot v4.1.0 by rglx" },
+			url: "https://eddbapi.elitebgs.app/api/v4/systems?name=" + encodeURIComponent(edsmSystemInfo.name),
+			headers: { "User-Agent": package.description + " v" + package.version + " by " + package.author },
 			timeout: 5000
 		} ) )
 
@@ -180,7 +181,7 @@ module.exports = {
 			//throw err // we don't wanna do this because it'll clobber our existing embed. let's just update the embed instead of having the bot's command handler pulverise it.
 
 			returnedEmbedObject.description = "__More information__" + "\n"
-			returnedEmbedObject.description += "Inara: <https://inara.cz/starsystem/?search=" + encodeURIComponent(edsmSystemInfo.name) + ">" + "\n"
+			returnedEmbedObject.description += "Inara: <https://inara.cz/elite/starsystem/?search=" + encodeURIComponent(edsmSystemInfo.name) + ">" + "\n"
 			returnedEmbedObject.description += "EDSM: <https://www.edsm.net/en/system/id/" + encodeURIComponent(edsmSystemInfo.id) + "/name/" + encodeURIComponent(edsmSystemInfo.name) + "/>" + "\n"
 			returnedEmbedObject.description += "EDDB: ❌ *[Garud's EDDB API unreachable.]*"
 
@@ -210,7 +211,7 @@ module.exports = {
 
 		// update description field with an EDDB link
 		returnedEmbedObject.description = "__More information__" + "\n"
-		returnedEmbedObject.description += "Inara: <https://inara.cz/starsystem/?search=" + encodeURIComponent(edsmSystemInfo.name) + ">" + "\n"
+		returnedEmbedObject.description += "Inara: <https://inara.cz/elite/starsystem/?search=" + encodeURIComponent(edsmSystemInfo.name) + ">" + "\n"
 		returnedEmbedObject.description += "EDSM: <https://www.edsm.net/en/system/id/" + edsmSystemInfo.id + "/name/" + encodeURIComponent(edsmSystemInfo.name) + "/>" + "\n"
 		returnedEmbedObject.description += "EDDB: <https://eddb.io/system/" + eddbSystemInfo.docs[0].id + ">" + "\n"
 		//returnedEmbedObject.description += "eBGS: <https://elitebgs.app/systems/" + eddbSystemInfo.docs[0]._id + ">" + "\n"
@@ -229,8 +230,8 @@ module.exports = {
 
 		let eddbFullStationsList = [{}]
 		eddbFullStationsList[1] = JSON.parse(await synchronousDownloadPage( {
-			url: "https://eddbapi.kodeblox.com/api/v4/stations?systemname=" + encodeURIComponent(edsmSystemInfo.name) + "&governmentname=anarchy,communism,confederacy,cooperative,corporate,democracy,dictatorship,feudal,imperial,none,patronage,prison%20colony,theocracy,engineer",
-			headers: { "User-Agent": "New E:D Info Bot v4.1.0 by rglx" },
+			url: "https://eddbapi.elitebgs.app/api/v4/stations?systemname=" + encodeURIComponent(edsmSystemInfo.name) + "&governmentname=anarchy,communism,confederacy,cooperative,corporate,democracy,dictatorship,feudal,imperial,none,patronage,prison%20colony,theocracy,engineer",
+			headers: { "User-Agent": package.description + " v" + package.version + " by " + package.author },
 			timeout: 5000
 		} ) )
 		
@@ -241,8 +242,8 @@ module.exports = {
 			for (let pageNumber = 2; pageNumber < (eddbFullStationsList[1].pages+1); pageNumber++) {
 				writeLog("retrieving station list, page "+ pageNumber,"EDDB API")
 				eddbFullStationsList[pageNumber] = JSON.parse(await synchronousDownloadPage( {
-					url: "https://eddbapi.kodeblox.com/api/v4/stations?page="+pageNumber+"&systemname=" + encodeURIComponent( edsmSystemInfo.name ) + "&governmentname=anarchy,communism,confederacy,cooperative,corporate,democracy,dictatorship,feudal,imperial,none,patronage,prison%20colony,theocracy,engineer",
-					headers: { "User-Agent": "New E:D Info Bot v4.1.0 by rglx" },
+					url: "https://eddbapi.elitebgs.app/api/v4/stations?page="+pageNumber+"&systemname=" + encodeURIComponent( edsmSystemInfo.name ) + "&governmentname=anarchy,communism,confederacy,cooperative,corporate,democracy,dictatorship,feudal,imperial,none,patronage,prison%20colony,theocracy,engineer",
+					headers: { "User-Agent": package.description + " v" + package.version + " by " + package.author },
 					timeout: 5000
 				} ) )
 			}
